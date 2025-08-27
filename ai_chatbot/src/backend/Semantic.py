@@ -40,22 +40,21 @@ def keyword_classificatio(userInput):
 
 def trendingAudio(embeddedInput):
     #vectorise the audio dataset then K-neighbours search to return closest k vectors
-    myTrendingDataSet = { 'prettyLittleBaby'}
-    df = pandas.DataFrame(myTrendingDataSet)
-    embeddedDf = model.encode(df)
-
-    import numpy as np
-    from sklearn.neighbors import NearestNeighbors
-    #top 5 output will be returned
-    neigh = NearestNeighbors(n_neighbors=5)
-    #fit our data into the neigh
-    neigh.fit(embeddedDf)
-    dist, index = neigh.kneighbors(embeddedInput)
-    index.toarray()
-
+    myTrendingDataSet = {'/tiktokAudio'}
+    #look at relevant column(also dataset duplicates were removed and sorted by popularity)
+    allSongs = myTrendingDataSet["track_name"].to_list()
+    allArtists = myTrendingDataSet["artist_name"].to_list()
+  
+    
     #then go to those indexes in the  dataset then return that as formatted string
     #frontend then recives a string
+    song1 = allSongs[0] + " by " + allArtists[0]
+    song2 = allSongs[1] + " by " + allArtists[1]
+    song3 = allSongs[2] + " by " + allArtists[2]
+    song4 = allSongs[3] + " by " + allArtists[3]
+    song5 = allSongs[4] + " by " + allArtists[4]
 
+    return f"The trending audio tracks are as follows: \n {song1} \n {song2} \n {song3} \n {song4} \n {song5}"
 
 def trendingCreators(embeddedInput):
     return print("creator")
@@ -63,6 +62,14 @@ def trendingCreators(embeddedInput):
 
 def trendingTrends(embeddedInput):
     return print("trend")
+
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
+
 
 
 
