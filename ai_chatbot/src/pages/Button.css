@@ -1,0 +1,59 @@
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Sizes */
+.btn.default { height: 40px; padding: 0 16px; font-size: 0.95rem; }
+.btn.sm { height: 36px; padding: 0 12px; font-size: 0.85rem; }
+.btn.lg { height: 48px; padding: 0 20px; font-size: 1rem; }
+.btn.icon { height: 40px; width: 40px; padding: 0; }
+
+/* Variants */
+.btn.default {
+  background: linear-gradient(90deg, #66d3f7, #66f7dd);
+  color: #fff;
+}
+.btn.default:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(255, 0, 80, 0.18); }
+
+/* .btn.secondary {
+  background: linear-gradient(90deg, #ff2ff1, #c82fff);
+  color: #fff;
+}
+.btn.secondary:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(0, 118, 255, 0.18); } */ 
+/* use this colour scheme if possible for the other button */
+
+.btn.outline {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+.btn.outline:hover { background: rgba(0,0,0,0.02); }
+
+.btn.destructive {
+  background: #e11d48;
+  color: #fff;
+}
+.btn.destructive:hover { background: #be123c; }
+
+.btn.ghost {
+  background: transparent;
+  color: #0f172a;
+}
+.btn.ghost:hover { background: rgba(0,0,0,0.04); }
+
+.btn.link {
+  background: transparent;
+  color: #0066ff;
+  text-decoration: underline;
+  padding: 0;
+}
