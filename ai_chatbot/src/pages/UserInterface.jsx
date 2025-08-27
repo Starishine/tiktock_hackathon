@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import ChatMessage from '../components/ChatMessage'
 import SuggestionChip from '../components/SuggestionChip'
 import CreatorCard from '../components/CreatorCard'
@@ -19,6 +20,7 @@ export default function UserInterface() {
     const [messages, setMessages] = useState([
         { role: 'assistant', type: 'text', content: seedGreeting },
     ])
+    const navigate = useNavigate()
 
     const quicks = ['Cooking creators', 'Dance creators', 'Fitness creators']
 
@@ -89,6 +91,11 @@ export default function UserInterface() {
                         <div style={{ color: 'var(--muted)', fontSize: 13 }}>Find creators by topic · suggestions & lists</div>
                     </div>
                 </div>
+
+                {/* Back Button */}
+                <button className="btn" style={{ marginBottom: 20 }} onClick={() => navigate('/')}>
+                    ← Back to Landing
+                </button>
 
                 {/* Messages */}
                 {messages.map((m, i) => {
