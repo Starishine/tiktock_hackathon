@@ -84,10 +84,14 @@ export default function UserInterface() {
                 }
             ])
         } else {
-            setMessages(m => [
-                ...m,
-                { role: 'assistant', type: 'text', content: "Got it! Ask me about a topic like “trending creators”, “trending audio”, or “trending videos” and I’ll curate a list." }
-            ])
+            fetch(`http://127.0.0.1:8000/semanticSearch/${topic}`)
+                .then((response) => {
+                    return response.text();
+                }).then((data) => {
+                    console.log(data)
+                    setMessages (m => [...m, { role: 'assistant', type: 'text', content: data }]) 
+                }
+                )       
         }
     }
 
