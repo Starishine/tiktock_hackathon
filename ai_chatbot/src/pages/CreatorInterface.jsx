@@ -155,10 +155,13 @@ export default function UserInterface() {
                 }
             ])
         } else {
+            const res = await fetch(`http://127.0.0.1:5000/scriptgen/${topic}`)
+            const data = await res.text()
+            console.log(data)
             setMessages(m => [
                 ...m,
-                { role: 'assistant', type: 'text', content: 'Try clicking one of the buttons above to discover creators for Cooking, Fitness, or Dance!' }
-            ])
+                { role: 'assistant', type: 'text', content: data }
+            ]);
         }
 
         try {
@@ -187,6 +190,7 @@ export default function UserInterface() {
     return (
         <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px', fontFamily: 'Arial, sans-serif', color: '#222222' }}>
             <div style={{ backgroundColor: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+
                 {/* Header */}
                 <div style={{ position: 'relative', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #d0bdf4' }}>
                     {/* Back Button */}
@@ -263,7 +267,7 @@ export default function UserInterface() {
                             color: '#2f2f2f'
                         }}
                     />
-                    <button 
+                    <button
                         onClick={handleSend}
                         style={{
                             width: '36px',
