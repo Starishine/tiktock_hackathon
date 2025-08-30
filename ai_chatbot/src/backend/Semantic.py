@@ -10,6 +10,7 @@ then return it.
 device='cpu'
 
 from flask import Flask
+from flask_cors import CORS
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
@@ -17,6 +18,7 @@ import pandas as pd
 model = SentenceTransformer("all-MiniLM-L6-v2", device="cpu")
 
 app = Flask(__name__)
+CORS(app)
 #main route
 @app.route("/semanticSearch/<userInput>")
 def keyword_classificatio(userInput):
@@ -96,7 +98,7 @@ def trendingTrends(embeddedInput):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=True)
 
 
 
