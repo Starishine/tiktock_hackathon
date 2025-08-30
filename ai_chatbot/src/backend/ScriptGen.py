@@ -1,6 +1,7 @@
 import torch
 from flask import Flask, request, jsonify
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from flask_cors import CORS
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -11,7 +12,7 @@ model.eval()
 
 def generate_script(role: str, content: str) -> str:
     # Simple prompt with role
-    prompt = f"{role}: {content}"
+    prompt = {content}
 
     # Tokenize input
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
@@ -20,8 +21,9 @@ def generate_script(role: str, content: str) -> str:
     with torch.no_grad():
         output_ids = model.generate(
             **inputs,
-            max_new_tokens=150,
+            max_new_tokens=300,
             min_new_tokens=50,
+            eos_token_id=tokenizer.eos_token_id,
             do_sample=True,
             top_p=0.9,
             temperature=0.8
@@ -31,26 +33,15 @@ def generate_script(role: str, content: str) -> str:
 
 
 app = Flask(__name__)
-
-# GET /scriptgen?q=topic&role=user
-@app.route("/scriptgen", methods=["GET"])
-def scriptgen_get():
-    role = request.args.get("role", "")
-    content = request.args.get("content", "")
-    if not role or not content:
-        return jsonify({"error": "Missing ?role=<role>&content=<content>"}), 400
-    return jsonify({"prompt": content, "output": generate_script(role, content)})
+CORS(app)
 
 
 # POST /scriptgen JSON: {"role":"user", "content":"Tell me a joke"}
-@app.route("/scriptgen", methods=["POST"])
-def scriptgen_post():
-    data = request.get_json(silent=True) or {}
-    role = data.get("role", "")
-    content = data.get("content", "")
-    if not role or not content:
-        return jsonify({"error": "JSON must include 'role' and 'content'"}), 400
-    return jsonify({"prompt": content, "output": generate_script(role, content)})
+@app.route("/scriptgen/<userInput>")
+def scriptgen_post(userInput):
+    role = "content creator"
+    content = userInput
+    return generate_script(role, content)
 
 
 if __name__ == "__main__":

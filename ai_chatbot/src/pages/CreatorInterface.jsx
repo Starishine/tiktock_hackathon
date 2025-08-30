@@ -43,9 +43,9 @@ const ContentCard = ({ title, content, footer }) => (
         color: '#222222'
     }}>
         <h3 style={{ margin: '0 0 12px 0', fontSize: '16px', color: '#ff6f91' }}>{title}</h3>
-        <div style={{ 
-            backgroundColor: '#eaeaeaff', 
-            padding: '12px', 
+        <div style={{
+            backgroundColor: '#eaeaeaff',
+            padding: '12px',
             borderRadius: '8px',
             fontFamily: 'monospace',
             fontSize: '14px',
@@ -56,10 +56,10 @@ const ContentCard = ({ title, content, footer }) => (
             {content}
         </div>
         {footer && (
-            <div style={{ 
-                marginTop: '12px', 
-                padding: '8px', 
-                backgroundColor: '#ffe5ec', 
+            <div style={{
+                marginTop: '12px',
+                padding: '8px',
+                backgroundColor: '#ffe5ec',
                 borderRadius: '6px',
                 fontSize: '14px',
                 fontStyle: 'italic',
@@ -96,9 +96,9 @@ export default function UserInterface() {
         setTimeout(() => respond(q), 220)
     }
 
-    function respond(q) {
+    async function respond(q) {
         const topic = q.toLowerCase()
-        
+
         if (topic.includes('tiktok') && topic.includes('script')) {
             setMessages(m => [
                 ...m,
@@ -253,10 +253,13 @@ GENERAL TIPS:
                 }
             ])
         } else {
+            const res = await fetch(`http://127.0.0.1:5000/scriptgen/${topic}`)
+            const data = await res.text()
+            console.log(data)
             setMessages(m => [
                 ...m,
-                { role: 'assistant', type: 'text', content: 'I can help you with script generation, upload optimization, content planning, and more! Try asking for "YouTube script ideas", "TikTok hooks", "Instagram captions", or "optimization tips".' }
-            ])
+                { role: 'assistant', type: 'text', content: data }
+            ]);
         }
     }
 
@@ -271,11 +274,11 @@ GENERAL TIPS:
         <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px', fontFamily: 'Arial, sans-serif', color: '#222222' }}>
             <div style={{ backgroundColor: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #d0bdf4' }}>
-                    <span style={{ 
+                    <span style={{
                         backgroundColor: 'linear-gradient(135deg, #ff9671, #ffc75f, #f9f871)',
                         background: 'linear-gradient(135deg, #ff9671, #ffc75f, #f9f871)',
-                        padding: '12px', 
-                        borderRadius: '50%', 
+                        padding: '12px',
+                        borderRadius: '50%',
                         fontSize: '20px',
                         display: 'flex',
                         alignItems: 'center',
@@ -287,9 +290,9 @@ GENERAL TIPS:
                         🎬
                     </span>
                     {/* Back Button */}
-                <button className="btn" style={{ marginBottom: 20 }} onClick={() => navigate('/')}>
-                    ← Back to Landing
-                </button>
+                    <button className="btn" style={{ marginBottom: 20 }} onClick={() => navigate('/')}>
+                        ← Back to Landing
+                    </button>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 20 }}>
                         <div style={{ fontWeight: 700, color: '#845ec2' }}>Creator Assistant</div>
                         <div style={{ color: '#6a0572', fontSize: 13 }}>AI script generation · Upload optimization · Content creation</div>
@@ -338,7 +341,7 @@ GENERAL TIPS:
                             color: '#2f2f2f'
                         }}
                     />
-                    <button 
+                    <button
                         onClick={handleSend}
                         style={{
                             padding: '12px 16px',
