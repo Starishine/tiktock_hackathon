@@ -10,8 +10,8 @@ const seedGreeting = (
             <span className="badge">✨</span>
             <strong>Content Discovery</strong>
         </div>
-        Hi! I'm your TikTok Creator Discovery assistant. I can help you find the perfect creators for any topic or niche.
-        Just tell me what subject you're interested in and I’ll generate a curated list of creators for you!
+        Hi! I'm your TikTok Trending Discovery assistant. I can help you find the popular creators, audio and videos.
+        Just tell me what subject you're interested in and I’ll generate a curated list for you!
     </>
 )
 
@@ -66,10 +66,27 @@ export default function UserInterface() {
                     }
                 }
             ])
+        } else if (topic.includes('dance')) {
+            setMessages(m => [
+                ...m,
+                {
+                    role: 'assistant', type: 'card', content: {
+                        title: '💃  “Top Dance Creators:”',
+                        items: [
+                            '@charlidamelio — Most followed tiktoker',
+                            '@justmaiko — Features intricate choreo ',
+                            '@isabellaboylston — Professional Ballet Dancer',
+                            '@jabbawockeez — Dance Crew ',
+                            '@nianaguerrero — Features fun and high-energy dances',
+                        ],
+                        footer: 'Need creators for a specific dance style?'
+                    }
+                }
+            ])
         } else {
             setMessages(m => [
                 ...m,
-                { role: 'assistant', type: 'text', content: "Got it! Tell me a topic like “fitness creators”, “cooking creators”, or “study hacks creators” and I’ll curate a list." }
+                { role: 'assistant', type: 'text', content: "Got it! Ask me about a topic like “trending creators”, “trending audio”, or “trending videos” and I’ll curate a list." }
             ])
         }
     }
@@ -88,7 +105,7 @@ export default function UserInterface() {
                     <span className="badge">🧭</span>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 20 }}>
                         <div style={{ fontWeight: 700 }}>Content Discovery</div>
-                        <div style={{ color: 'var(--muted)', fontSize: 13 }}>Find creators by topic · suggestions & lists</div>
+                        <div style={{ color: 'var(--muted)', fontSize: 13 }}>Find trending topics · suggestions & lists</div>
                     </div>
                 </div>
 
@@ -126,7 +143,7 @@ export default function UserInterface() {
                         <input
                             value={input}
                             onChange={e => setInput(e.target.value)}
-                            placeholder="Ask about creators for specific topics…"
+                            placeholder="Ask about various trending topics…"
                             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                         />
                         <button className="send" onClick={handleSend}>➤</button>

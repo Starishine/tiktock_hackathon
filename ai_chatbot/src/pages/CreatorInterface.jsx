@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 // Mock components for demonstration
 const ChatMessage = ({ role, children }) => (
@@ -82,6 +83,7 @@ const seedGreeting = (
 )
 
 export default function UserInterface() {
+    const navigate = useNavigate()
     const [input, setInput] = useState('')
     const [messages, setMessages] = useState([
         { role: 'assistant', type: 'text', content: seedGreeting },
@@ -284,6 +286,10 @@ GENERAL TIPS:
                     }}>
                         🎬
                     </span>
+                    {/* Back Button */}
+                <button className="btn" style={{ marginBottom: 20 }} onClick={() => navigate('/')}>
+                    ← Back to Landing
+                </button>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 20 }}>
                         <div style={{ fontWeight: 700, color: '#845ec2' }}>Creator Assistant</div>
                         <div style={{ color: '#6a0572', fontSize: 13 }}>AI script generation · Upload optimization · Content creation</div>
