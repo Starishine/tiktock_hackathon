@@ -1,43 +1,118 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import ChatMessage from '../components/ChatMessage'
-import SuggestionChip from '../components/SuggestionChip'
-import CreatorCard from '../components/CreatorCard'
+
+// ChatMessage component with flexible bubble
+const ChatMessage = ({ role, children }) => (
+    <div style={{
+        display: 'flex',
+        justifyContent: role === 'user' ? 'flex-end' : 'flex-start',
+        marginBottom: '12px',
+        width: '100%'
+    }}>
+        <div style={{
+            display: 'inline-block',
+            maxWidth: '75%',
+            padding: '12px 16px',
+            backgroundColor: role === 'user' ? '#c5e4fe' : '#fff4e7',
+            borderRadius: '12px',
+            color: role === 'user' ? '#4a148c' : '#0d47a1',
+            wordBreak: 'break-word',
+            whiteSpace: 'pre-wrap'
+        }}>
+            {children}
+        </div>
+    </div>
+)
+
+const SuggestionChip = ({ text, onClick }) => (
+    <button
+        onClick={() => onClick(text)}
+        style={{
+            padding: '8px 16px',
+            margin: '4px',
+            background: 'linear-gradient(135deg, #bba6e3, #ffb3c6, #ffe5a9)',
+            border: '1px solid #ffb5e8',
+            borderRadius: '20px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            color: '#5d1451'
+        }}
+    >
+        {text}
+    </button>
+)
+
+const CreatorCard = ({ title, items, footer }) => (
+    <div style={{
+        border: '1px solid #d0bdf4',
+        borderRadius: '12px',
+        padding: '16px',
+        backgroundColor: '#fcf6f5',
+        color: '#222222',
+        maxWidth: '100%'
+    }}>
+        <h3 style={{ margin: '0 0 12px 0', fontSize: '16px', color: '#ff6f91' }}>{title}</h3>
+        <div style={{ 
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+            padding: '8px',
+            backgroundColor: '#eaeaeaff',
+            borderRadius: '8px',
+            fontFamily: 'monospace',
+            fontSize: '14px',
+            color: '#333333'
+        }}>
+            {items.map((item, idx) => <div key={idx}>{item}</div>)}
+        </div>
+        {footer && (
+            <div style={{ 
+                marginTop: '12px', 
+                padding: '8px', 
+                backgroundColor: '#ffe5ec', 
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontStyle: 'italic',
+                color: '#6a0572'
+            }}>
+                {footer}
+            </div>
+        )}
+    </div>
+)
 
 const seedGreeting = (
     <>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <span className="badge">✨</span>
-            <strong>Content Discovery</strong>
-        </div>
-        Hi! I'm your TikTok Trending Discovery assistant. I can help you find the popular creators, audio and videos.
-        Just tell me what subject you're interested in and I’ll generate a curated list for you!
+        <span style={{ color: '#3b3b98' }}>
+            Hi! I'm your AI User Assistant. I can help you discover TikTok creators for any topic.
+            Just click one of the buttons below or type your request!
+        </span>
     </>
 )
 
 export default function UserInterface() {
+    const navigate = useNavigate()
     const [input, setInput] = useState('')
     const [messages, setMessages] = useState([
         { role: 'assistant', type: 'text', content: seedGreeting },
     ])
-    const navigate = useNavigate()
 
-    const quicks = ['Cooking creators', 'Dance creators', 'Fitness creators']
+    const quicks = ['Cooking creators', 'Fitness creators', 'Dance creators']
 
     function addUserQuery(q) {
         setMessages(m => [...m, { role: 'user', type: 'text', content: q }])
         setTimeout(() => respond(q), 220)
     }
 
-    function respond(q) {
-        // Tiny demo router—replace with real API later
+    async function respond(q) {
         const topic = q.toLowerCase()
+
         if (topic.includes('fitness')) {
             setMessages(m => [
                 ...m,
                 {
                     role: 'assistant', type: 'card', content: {
-                        title: '💪  “Top Fitness Creators:”',
+                        title: '💪 Top Fitness Creators:',
                         items: [
                             '@chloe_t — Home workout routines',
                             '@fitnesswithpj — Strength training tips',
@@ -54,7 +129,7 @@ export default function UserInterface() {
                 ...m,
                 {
                     role: 'assistant', type: 'card', content: {
-                        title: '🍳  “Top Cooking Creators:”',
+                        title: '🍳 Top Cooking Creators:',
                         items: [
                             '@gordonramsayofficial — Pro chef with quick tips',
                             '@emmymadeinjapan — International cuisine explorer',
@@ -71,23 +146,42 @@ export default function UserInterface() {
                 ...m,
                 {
                     role: 'assistant', type: 'card', content: {
-                        title: '💃  “Top Dance Creators:”',
+                        title: '💃 Top Dance Creators:',
                         items: [
-                            '@charlidamelio — Most followed tiktoker',
-                            '@justmaiko — Features intricate choreo ',
-                            '@isabellaboylston — Professional Ballet Dancer',
-                            '@jabbawockeez — Dance Crew ',
-                            '@nianaguerrero — Features fun and high-energy dances',
+                            '@charlidamelio — TikTok dance trends',
+                            '@addisonre — Viral choreography',
+                            '@tiktokdancearmy — Community dance tutorials',
                         ],
-                        footer: 'Need creators for a specific dance style?'
+                        footer: 'Looking for creators in a specific dance style?'
                     }
                 }
             ])
         } else {
-            setMessages(m => [
-                ...m,
-                { role: 'assistant', type: 'text', content: "Got it! Ask me about a topic like “trending creators”, “trending audio”, or “trending videos” and I’ll curate a list." }
-            ])
+
+            fetch(`http://127.0.0.1:8000/semanticSearch/${topic}`)
+                .then((response) => {
+                    return response.text();
+                }).then((data) => {
+                    console.log(data)
+                    setMessages (m => [...m, { role: 'assistant', type: 'text', content: data }]) 
+                }
+                )       
+        }
+
+        // Background fetch
+        try {
+            const response = await fetch('/api/discover-creators', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: q, type: 'creator_discovery' })
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                console.log('API response received:', data)
+            }
+        } catch (error) {
+            console.error('Background API call failed:', error)
         }
     }
 
@@ -99,55 +193,99 @@ export default function UserInterface() {
     }
 
     return (
-        <div className="container">
-            <div className="chat-wrap">
-                <div className="chat-header">
-                    <span className="badge">🧭</span>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 20 }}>
-                        <div style={{ fontWeight: 700 }}>Content Discovery</div>
-                        <div style={{ color: 'var(--muted)', fontSize: 13 }}>Find trending topics · suggestions & lists</div>
+        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px', fontFamily: 'Arial, sans-serif', color: '#222222' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+                {/* Header */}
+                <div style={{ position: 'relative', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #d0bdf4' }}>
+                    {/* Back Button */}
+<button 
+    className="btn" 
+    style={{ 
+        width: '36px',           // Square button
+        height: '36px',
+        fontSize: '16px',        // Slightly smaller arrow
+        position: 'absolute',
+        left: 0,
+        top: '50%',
+        transform: 'translateY(-50%)',
+        borderRadius: '12px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        border: '1px solid #ccc',
+        background: 'linear-gradient(135deg, #845ec2, #ff6f91, #ffc75f)',
+        color: 'white'           // Ensures the arrow is visible
+    }} 
+    onClick={() => navigate('/')}
+>
+    ←
+</button>
+
+
+                    {/* Centered Text */}
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontWeight: 700, color: '#845ec2', fontSize: 25 }}>User Assistant</div>
+                        <div style={{ color: '#6a0572', fontSize: 13 }}>Discover TikTok creators by topic</div>
                     </div>
                 </div>
 
-                {/* Back Button */}
-                <button className="btn" style={{ marginBottom: 20 }} onClick={() => navigate('/')}>
-                    ← Back to Landing
-                </button>
-
                 {/* Messages */}
-                {messages.map((m, i) => {
-                    if (m.type === 'card' && m.role === 'assistant') {
+                <div style={{ marginBottom: '20px' }}>
+                    {messages.map((m, i) => {
+                        if (m.type === 'card' && m.role === 'assistant') {
+                            return (
+                                <ChatMessage role="assistant" key={i}>
+                                    <CreatorCard title={m.content.title} items={m.content.items} footer={m.content.footer} />
+                                </ChatMessage>
+                            )
+                        }
                         return (
-                            <ChatMessage role="assistant" key={i}>
-                                <CreatorCard title={m.content.title} items={m.content.items} footer={m.content.footer} />
+                            <ChatMessage role={m.role} key={i}>
+                                {m.content}
                             </ChatMessage>
                         )
-                    }
-                    return (
-                        <ChatMessage role={m.role} key={i}>
-                            {m.content}
-                        </ChatMessage>
-                    )
-                })}
+                    })}
+                </div>
 
                 {/* Quick chips */}
-                <div className="chips">
+                <div style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                     {quicks.map(q => (
                         <SuggestionChip key={q} text={q} onClick={addUserQuery} />
                     ))}
                 </div>
 
                 {/* Composer */}
-                <div className="composer">
-                    <div className="inputbar">
-                        <input
-                            value={input}
-                            onChange={e => setInput(e.target.value)}
-                            placeholder="Ask about various trending topics…"
-                            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                        />
-                        <button className="send" onClick={handleSend}>➤</button>
-                    </div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <input
+                        value={input}
+                        onChange={e => setInput(e.target.value)}
+                        placeholder="Type a topic…"
+                        onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                        style={{
+                            flex: 1,
+                            padding: '12px 16px',
+                            border: '1px solid #c3bef0',
+                            borderRadius: '24px',
+                            fontSize: '14px',
+                            outline: 'none',
+                            color: '#2f2f2f'
+                        }}
+                    />
+                    <button 
+                        onClick={handleSend}
+                        style={{
+                            padding: '12px 16px',
+                            background: 'linear-gradient(135deg, #845ec2, #ff6f91, #ffc75f)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '20px',
+                            cursor: 'pointer',
+                            fontSize: '16px'
+                        }}
+                    >
+                        ➤
+                    </button>
                 </div>
             </div>
         </div>
